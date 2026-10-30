@@ -168,6 +168,30 @@ class AppTheme {
         hintStyle: const TextStyle(color: AppColors.textMutedLight),
         errorStyle: const TextStyle(color: AppColors.error),
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors.backgroundLight,
+        indicatorColor: AppColors.secondarySurfaceLight,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        height: 68,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return textTheme.labelSmall?.copyWith(
+              color: AppColors.textPrimaryLight,
+              fontWeight: FontWeight.w600,
+            );
+          }
+          return textTheme.labelSmall?.copyWith(
+            color: AppColors.textSecondaryLight,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: AppColors.primaryAccentDark);
+          }
+          return const IconThemeData(color: AppColors.textSecondaryLight);
+        }),
+      ),
     );
   }
 
@@ -287,6 +311,30 @@ class AppTheme {
         labelStyle: const TextStyle(color: AppColors.textSecondaryDark),
         hintStyle: const TextStyle(color: AppColors.textMutedDark),
         errorStyle: const TextStyle(color: AppColors.error),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors.backgroundDark,
+        indicatorColor: AppColors.secondarySurfaceDark,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        height: 68,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return textTheme.labelSmall?.copyWith(
+              color: AppColors.textPrimaryDark,
+              fontWeight: FontWeight.w600,
+            );
+          }
+          return textTheme.labelSmall?.copyWith(
+            color: AppColors.textSecondaryDark,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: AppColors.primaryAccentDarkTheme);
+          }
+          return const IconThemeData(color: AppColors.textSecondaryDark);
+        }),
       ),
     );
   }

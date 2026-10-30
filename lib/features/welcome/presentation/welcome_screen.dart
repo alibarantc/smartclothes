@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smartclothes/core/constants/app_constants.dart';
+import 'package:smartclothes/core/navigation/main_navigation_screen.dart';
 import 'package:smartclothes/core/widgets/smart_button.dart';
 import 'package:smartclothes/core/widgets/smart_card.dart';
 
@@ -12,8 +13,6 @@ class WelcomeScreen extends StatelessWidget {
 
   /// Optional callback invoked when the user taps the get started button.
   final VoidCallback? onGetStarted;
-
-  static void _defaultOnGetStarted() {}
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +126,15 @@ class WelcomeScreen extends StatelessWidget {
                       SmartButton(
                         text: 'Başla',
                         icon: Icons.arrow_forward_rounded,
-                        onPressed: onGetStarted ?? _defaultOnGetStarted,
+                        onPressed: onGetStarted ??
+                            () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const MainNavigationScreen(),
+                                ),
+                              );
+                            },
                       ),
                       const SizedBox(height: AppSpacing.sm),
                     ],
