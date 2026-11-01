@@ -188,7 +188,10 @@ cd smartclothes
 # 3. Bağımlılıkları yükleyin (kod tabanı eklendiğinde)
 flutter pub get
 
-# 4. Uygulamayı çalıştırın
+# 4. (İsteğe bağlı) Firebase kurulumunu tamamlayın
+# Detaylı rehber: docs/firebase-setup.md
+
+# 5. Uygulamayı çalıştırın
 flutter run
 ```
 

@@ -1,0 +1,26 @@
+rules_version = '2';
+
+// Firebase Storage Security Rules — SmartClothes
+//
+// Current state: ALL reads and writes are DENIED by default.
+//
+// These rules will be progressively opened up once Firebase Authentication is
+// in place (Commit #05). Future rules will follow the pattern:
+//
+//   match /users/{userId}/{allPaths=**} {
+//     allow read, write: if request.auth != null && request.auth.uid == userId;
+//   }
+//
+// To deploy these rules:
+//   firebase deploy --only storage
+//
+// See docs/firebase-setup.md for the full setup guide.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
