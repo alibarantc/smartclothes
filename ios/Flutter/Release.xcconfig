@@ -1,0 +1,2 @@
+// Flutter xcconfig for Release builds
+#include "Generated.xcconfig"
