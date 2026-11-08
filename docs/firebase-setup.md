@@ -11,12 +11,13 @@
 2. [Android ve iOS Uygulamalarını Kaydetme](#2-android-ve-ios-uygulamalarını-kaydetme)
 3. [FlutterFire CLI Kurulumu](#3-flutterfire-cli-kurulumu)
 4. [flutterfire configure İşlemi](#4-flutterfire-configure-işlemi)
-5. [Cloud Firestore Kurulumu](#5-cloud-firestore-kurulumu)
-6. [Firebase Storage Kurulumu ve Faturalandırma](#6-firebase-storage-kurulumu-ve-faturalandırma)
-7. [Güvenlik Kurallarını Dağıtma (Deploy)](#7-güvenlik-kurallarını-dağıtma-deploy)
-8. [Yerel Geliştirme (Local Development)](#8-yerel-geliştirme-local-development)
-9. [GitHub Actions ve CI Yapılandırması](#9-github-actions-ve-ci-yapılandırması)
-10. [Firebase Bağlantısını Doğrulama](#10-firebase-bağlantısını-doğrulama)
+5. [Firebase Authentication Kurulumu](#5-firebase-authentication-kurulumu)
+6. [Cloud Firestore Kurulumu](#6-cloud-firestore-kurulumu)
+7. [Firebase Storage Kurulumu ve Faturalandırma](#7-firebase-storage-kurulumu-ve-faturalandırma)
+8. [Güvenlik Kurallarını Dağıtma (Deploy)](#8-güvenlik-kurallarını-dağıtma-deploy)
+9. [Yerel Geliştirme (Local Development)](#9-yerel-geliştirme-local-development)
+10. [GitHub Actions ve CI Yapılandırması](#10-github-actions-ve-ci-yapılandırması)
+11. [Firebase Bağlantısını Doğrulama](#11-firebase-bağlantısını-doğrulama)
 
 ---
 
@@ -115,7 +116,23 @@ class FirebaseConfig {
 
 ---
 
-## 5. Cloud Firestore Kurulumu
+## 5. Firebase Authentication Kurulumu
+
+SmartClothes kullanıcı hesapları, e-posta ve şifre kimlik doğrulaması üzerinden çalışır.
+
+1. Firebase Console sol menüsünden **Build → Authentication** bölümüne gidin.
+2. İlk kez açıyorsanız **Başlayın** (Get started) butonuna tıklayın.
+3. **Sign-in method** (Oturum açma yöntemi) sekmesine geçin.
+4. Sağlayıcılar listesinden **Email/Password** (E-posta/Şifre) seçeneğine tıklayın.
+5. İlk anahtar olan **Email/Password** seçeneğini etkinleştirin (Enable).
+6. "Email link (passwordless sign-in)" seçeneğini kapalı bırakın.
+7. **Kaydet** (Save) butonuna basarak ayarı uygulayın.
+
+Bu adım tamamlandıktan sonra, `AuthService` sınıfı üzerinden e-posta/şifre ile kayıt, giriş ve şifre sıfırlama işlemleri otomatik olarak aktif hale gelir.
+
+---
+
+## 6. Cloud Firestore Kurulumu
 
 1. Firebase Console sol menüsünden **Build → Firestore Database** bölümüne gidin.
 2. **Veritabanı Oluştur** (Create database) butonuna tıklayın.
@@ -125,7 +142,7 @@ class FirebaseConfig {
 
 ---
 
-## 6. Firebase Storage Kurulumu ve Faturalandırma
+## 7. Firebase Storage Kurulumu ve Faturalandırma
 
 Kıyafet fotoğraflarının saklanması için Cloud Storage kullanılır.
 
@@ -139,7 +156,7 @@ Kıyafet fotoğraflarının saklanması için Cloud Storage kullanılır.
 
 ---
 
-## 7. Güvenlik Kurallarını Dağıtma (Deploy)
+## 8. Güvenlik Kurallarını Dağıtma (Deploy)
 
 SmartClothes reposunda önceden tanımlanmış başlangıç güvenlik kuralları mevcuttur:
 
@@ -149,7 +166,7 @@ SmartClothes reposunda önceden tanımlanmış başlangıç güvenlik kuralları
 | `storage.rules` | Firebase Storage dosya erişim güvenlik kuralları |
 | `firebase.json` | Firebase CLI yapılandırma dosyası |
 
-Mevcut kurallar istemci tarafındaki tüm okuma ve yazma işlemlerini varsayılan olarak **reddedecek (`allow read, write: if false;`)** şekilde ayarlanmıştır. Kullanıcı kimlik doğrulama sistemi (Commit #05) eklendiğinde bu kurallar kullanıcı bazlı erişime (`request.auth.uid == userId`) açılacaktır.
+Mevcut kurallar istemci tarafındaki tüm okuma ve yazma işlemlerini varsayılan olarak **reddedecek (`allow read, write: if false;`)** şekilde ayarlanmıştır. Kullanıcı kimlik doğrulama sistemi (Commit #05) ile kullanıcılar doğrulanmış olsa dahi, gardırop CRUD işlemleri (Commit #06) tamamlanana kadar veritabanı kuralları sıkı güvenlik amacıyla kapalı kalır.
 
 Kuralları Firebase'e göndermek için terminalden:
 
@@ -159,7 +176,7 @@ firebase deploy --only firestore:rules,storage
 
 ---
 
-## 8. Yerel Geliştirme (Local Development)
+## 9. Yerel Geliştirme (Local Development)
 
 - **Firebase Olmadan Çalışma:**
   Firebase henüz yapılandırılmamışsa, `FirebaseService.initialize()` fonksiyonu hata fırlatmaz. Konsola şu uyarıyı yazarak uygulamayı demo modunda başlatır:
@@ -174,7 +191,7 @@ firebase deploy --only firestore:rules,storage
 
 ---
 
-## 9. GitHub Actions ve CI Yapılandırması
+## 10. GitHub Actions ve CI Yapılandırması
 
 SmartClothes sürekli entegrasyon (CI) boru hattı (`.github/workflows/ci.yml`):
 - `flutter analyze --fatal-infos`
@@ -188,7 +205,7 @@ CI ortamında gerçek bir Firebase projesi veya kimlik bilgisi **gerekmez**. Uyg
 
 ---
 
-## 10. Firebase Bağlantısını Doğrulama
+## 11. Firebase Bağlantısını Doğrulama
 
 Firebase kurulumunu doğrulamak için:
 

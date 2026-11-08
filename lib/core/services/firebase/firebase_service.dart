@@ -16,6 +16,12 @@ class FirebaseService {
   /// Whether Firebase has been successfully initialized.
   static bool get isInitialized => _initialized;
 
+  /// Resets the initialized flag for testing purposes.
+  @visibleForTesting
+  static void resetForTesting() {
+    _initialized = false;
+  }
+
   /// Attempts to initialize Firebase.
   ///
   /// If Firebase configuration is not present, reports this clearly and skips

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:smartclothes/core/constants/app_constants.dart';
+import 'package:smartclothes/core/widgets/smart_button.dart';
 import 'package:smartclothes/core/widgets/smart_card.dart';
 import 'package:smartclothes/core/widgets/smart_section_header.dart';
+import 'package:smartclothes/features/auth/services/auth_service.dart';
 
 /// Profile screen presenting guest user scaffold, upcoming preference
 /// categories (style, budget), and application settings placeholders.
@@ -12,6 +14,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final authService = AuthService.instance;
 
     return Scaffold(
       appBar: AppBar(
@@ -27,50 +30,104 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Guest Profile Header (No fake username or email)
-              SmartCard(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: colorScheme.outline.withOpacity(0.5),
+              // Profile Header
+              ValueListenableBuilder<bool>(
+                valueListenable: authService.isDemoMode,
+                builder: (context, isDemo, _) {
+                  final user = authService.currentUser;
+                  final String profileTitle;
+                  final String profileSubtitle;
+                  final String badgeLabel;
+
+                  if (user != null) {
+                    profileTitle = (user.displayName != null && user.displayName!.trim().isNotEmpty)
+                        ? user.displayName!
+                        : (user.email ?? 'SmartClothes Kullanıcısı');
+                    profileSubtitle = user.email ?? 'Firebase Oturumu Aktif';
+                    badgeLabel = 'Doğrulandı';
+                  } else if (isDemo) {
+                    profileTitle = 'Misafir / Demo Modu';
+                    profileSubtitle = 'Demo modundasınız. Bulut senkronizasyonu devre dışı.';
+                    badgeLabel = 'Demo';
+                  } else {
+                    profileTitle = 'Misafir Kullanıcı';
+                    profileSubtitle = 'Hesap oluşturma ve senkronizasyon yakında.';
+                    badgeLabel = 'Çevrimdışı';
+                  }
+
+                  return SmartCard(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            color: colorScheme.primaryContainer,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: colorScheme.outline.withOpacity(0.5),
+                            ),
+                          ),
+                          child: Icon(
+                            user != null ? Icons.person_rounded : Icons.person_outline_rounded,
+                            size: 36,
+                            color: colorScheme.primary,
+                          ),
                         ),
-                      ),
-                      child: Icon(
-                        Icons.person_rounded,
-                        size: 36,
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Misafir Kullanıcı',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      profileTitle,
+                                      style: theme.textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: AppSpacing.xs),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: AppSpacing.sm,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.surfaceContainerHighest,
+                                      borderRadius: AppRadius.roundedSm,
+                                    ),
+                                    child: Text(
+                                      badgeLabel,
+                                      style: theme.textTheme.labelSmall?.copyWith(
+                                        color: colorScheme.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: AppSpacing.xs),
+                              Text(
+                                profileSubtitle,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: AppSpacing.xs),
-                          Text(
-                            'Hesap oluşturma ve senkronizasyon yakında.',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
 
               const SizedBox(height: AppSpacing.lg),
@@ -169,6 +226,23 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+
+              const SizedBox(height: AppSpacing.lg),
+
+              ValueListenableBuilder<bool>(
+                valueListenable: authService.isDemoMode,
+                builder: (context, isDemo, _) {
+                  return SmartButton(
+                    text: isDemo ? 'Demo Modundan Çık' : 'Çıkış Yap',
+                    icon: Icons.logout_rounded,
+                    variant: SmartButtonVariant.outlined,
+                    onPressed: () async {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      await authService.signOut();
+                    },
+                  );
+                },
               ),
 
               const SizedBox(height: AppSpacing.xl),

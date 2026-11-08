@@ -80,15 +80,6 @@ class AppTheme {
           statusBarBrightness: Brightness.light,
         ),
       ),
-      cardTheme: const CardTheme(
-        elevation: 0,
-        color: AppColors.cardSurfaceLight,
-        shape: RoundedRectangleBorder(
-          borderRadius: AppRadius.roundedLg,
-          side: BorderSide(color: AppColors.borderLight, width: 1.0),
-        ),
-        margin: EdgeInsets.zero,
-      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: 0,
@@ -218,15 +209,6 @@ class AppTheme {
           statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.dark,
         ),
-      ),
-      cardTheme: const CardTheme(
-        elevation: 0,
-        color: AppColors.cardSurfaceDark,
-        shape: RoundedRectangleBorder(
-          borderRadius: AppRadius.roundedLg,
-          side: BorderSide(color: AppColors.borderDark, width: 1.0),
-        ),
-        margin: EdgeInsets.zero,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

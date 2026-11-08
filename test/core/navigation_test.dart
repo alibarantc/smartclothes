@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:smartclothes/app/smart_clothes_app.dart';
 import 'package:smartclothes/core/navigation/main_navigation_screen.dart';
 import 'package:smartclothes/core/theme/app_theme.dart';
+import 'package:smartclothes/features/auth/services/auth_service.dart';
 import 'package:smartclothes/features/home/presentation/home_screen.dart';
 import 'package:smartclothes/features/outfits/presentation/outfits_screen.dart';
 import 'package:smartclothes/features/profile/presentation/profile_screen.dart';
@@ -177,8 +178,9 @@ void main() {
       expect(find.byType(HomeScreen), findsOneWidget);
     });
 
-    testWidgets('App starts at WelcomeScreen and tapping Başla navigates to MainNavigation',
+    testWidgets('App starts at WelcomeScreen and navigating opens MainNavigation',
         (tester) async {
+      AuthService.instance = AuthService();
       await tester.pumpWidget(const SmartClothesApp());
       await tester.pumpAndSettle();
 
@@ -186,8 +188,16 @@ void main() {
       expect(find.text('Başla'), findsOneWidget);
       expect(find.byType(MainNavigationScreen), findsNothing);
 
-      // Tap 'Başla'
+      // Tap 'Başla' -> opens LoginScreen
       await tester.tap(find.text('Başla'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Giriş Yap'), findsWidgets);
+
+      // Enter demo mode to proceed to MainNavigationScreen
+      final demoBtn = find.text('Demo Olarak Devam Et');
+      await tester.ensureVisible(demoBtn);
+      await tester.tap(demoBtn);
       await tester.pumpAndSettle();
 
       // Verify MainNavigationScreen and HomeScreen are visible

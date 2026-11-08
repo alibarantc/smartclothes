@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:smartclothes/core/constants/app_constants.dart';
-import 'package:smartclothes/core/navigation/main_navigation_screen.dart';
 import 'package:smartclothes/core/widgets/smart_button.dart';
 import 'package:smartclothes/core/widgets/smart_card.dart';
+import 'package:smartclothes/features/auth/presentation/login_screen.dart';
+import 'package:smartclothes/features/auth/services/auth_service.dart';
 
 /// Welcome screen introducing SmartClothes and serving as the visual entry point.
 class WelcomeScreen extends StatelessWidget {
@@ -21,23 +22,17 @@ class WelcomeScreen extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.lg,
-                vertical: AppSpacing.xl,
-              ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight - (AppSpacing.xl * 2),
-                ),
-                child: IntrinsicHeight(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Spacer(flex: 2),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.xl,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: AppSpacing.lg),
 
                       // Wardrobe-themed clean icon container
                       Container(
@@ -120,7 +115,7 @@ class WelcomeScreen extends StatelessWidget {
                         ),
                       ),
 
-                      const Spacer(flex: 3),
+                      const SizedBox(height: AppSpacing.xl),
 
                       // Get Started Action Button
                       SmartButton(
@@ -130,21 +125,28 @@ class WelcomeScreen extends StatelessWidget {
                             () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const MainNavigationScreen(),
+                                  builder: (context) => const LoginScreen(),
                                 ),
                               );
                             },
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+
+                      // Demo Mode Button
+                      SmartButton(
+                        text: 'Demo Olarak Devam Et',
+                        icon: Icons.explore_outlined,
+                        variant: SmartButtonVariant.outlined,
+                        onPressed: () {
+                          AuthService.instance.enterDemoMode();
+                        },
                       ),
                       const SizedBox(height: AppSpacing.sm),
                     ],
                   ),
                 ),
               ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
+            ),
+          );
+        }
+      }

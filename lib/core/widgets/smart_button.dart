@@ -139,7 +139,13 @@ class SmartButton extends StatelessWidget {
         children: [
           Icon(icon, size: 20.0),
           const SizedBox(width: AppSpacing.sm),
-          Text(text),
+          Flexible(
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       );
     }
