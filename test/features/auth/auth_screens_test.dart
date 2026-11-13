@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smartclothes/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:smartclothes/core/navigation/main_navigation_screen.dart';
 import 'package:smartclothes/core/services/firebase/firebase_service.dart';
 import 'package:smartclothes/core/theme/app_theme.dart';
@@ -13,6 +15,7 @@ import 'package:smartclothes/features/welcome/presentation/welcome_screen.dart';
 
 void main() {
   setUp(() {
+    SharedPreferences.setMockInitialValues({});
     FirebaseService.resetForTesting();
     AuthService.instance = AuthService();
   });
@@ -222,6 +225,9 @@ void main() {
       AuthService.instance.enterDemoMode();
       await tester.pumpAndSettle();
 
+      expect(find.byType(OnboardingScreen), findsOneWidget);
+      await tester.tap(find.text('Şimdilik atla'));
+      await tester.pumpAndSettle();
       expect(find.byType(MainNavigationScreen), findsOneWidget);
       expect(find.byType(WelcomeScreen), findsNothing);
 

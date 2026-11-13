@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smartclothes/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:smartclothes/app/smart_clothes_app.dart';
 import 'package:smartclothes/core/navigation/main_navigation_screen.dart';
 import 'package:smartclothes/core/theme/app_theme.dart';
@@ -10,6 +12,8 @@ import 'package:smartclothes/features/profile/presentation/profile_screen.dart';
 import 'package:smartclothes/features/wardrobe/presentation/wardrobe_screen.dart';
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
+
   group('MainNavigationScreen Widget Tests', () {
     testWidgets('Renders all four navigation destinations with labels and icons',
         (tester) async {
@@ -200,7 +204,11 @@ void main() {
       await tester.tap(demoBtn);
       await tester.pumpAndSettle();
 
-      // Verify MainNavigationScreen and HomeScreen are visible
+      // First-time demo users complete onboarding before the home screen.
+      expect(find.byType(OnboardingScreen), findsOneWidget);
+      await tester.tap(find.text('Şimdilik atla'));
+      await tester.pumpAndSettle();
+
       expect(find.byType(MainNavigationScreen), findsOneWidget);
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(find.byType(NavigationBar), findsOneWidget);

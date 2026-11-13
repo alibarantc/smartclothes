@@ -4,6 +4,7 @@ import 'package:smartclothes/core/widgets/smart_button.dart';
 import 'package:smartclothes/core/widgets/smart_card.dart';
 import 'package:smartclothes/core/widgets/smart_section_header.dart';
 import 'package:smartclothes/features/auth/services/auth_service.dart';
+import 'package:smartclothes/features/onboarding/presentation/profile_preferences_panel.dart';
 
 /// Profile screen presenting guest user scaffold, upcoming preference
 /// categories (style, budget), and application settings placeholders.
@@ -132,67 +133,8 @@ class ProfileScreen extends StatelessWidget {
 
               const SizedBox(height: AppSpacing.lg),
 
-              // 1. Stil Tercihleri Bölümü
-              const SmartSectionHeader(
-                title: 'Stil Tercihleri',
-                subtitle: 'Kişiselleştirilmiş öneriler için tarzını belirle',
-              ),
-              SmartCard(
-                padding: EdgeInsets.zero,
-                child: Column(
-                  children: [
-                    const _ProfilePlaceholderTile(
-                      icon: Icons.style_outlined,
-                      title: 'Giyim Tarzı',
-                      subtitle: 'Minimalist, Klasik, Sokak Modası',
-                      badgeText: 'Yakında',
-                    ),
-                    Divider(height: 1, color: colorScheme.outlineVariant),
-                    const _ProfilePlaceholderTile(
-                      icon: Icons.palette_outlined,
-                      title: 'Favori Renk Paletleri',
-                      subtitle: 'Toprak tonları, Monokrom, Pastel',
-                      badgeText: 'Yakında',
-                    ),
-                    Divider(height: 1, color: colorScheme.outlineVariant),
-                    const _ProfilePlaceholderTile(
-                      icon: Icons.straighten_outlined,
-                      title: 'Kalıp & Beden Tercihleri',
-                      subtitle: 'Oversize, Slim, Regular',
-                      badgeText: 'Yakında',
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: AppSpacing.lg),
-
-              // 2. Bütçe Tercihleri Bölümü
-              const SmartSectionHeader(
-                title: 'Bütçe Tercihleri',
-                subtitle: 'Alışveriş ve parça önerileri için bütçe hedefleri',
-              ),
-              SmartCard(
-                padding: EdgeInsets.zero,
-                child: Column(
-                  children: [
-                    const _ProfilePlaceholderTile(
-                      icon: Icons.account_balance_wallet_outlined,
-                      title: 'Alışveriş Bütçe Aralığı',
-                      subtitle: 'Aylık giyim harcama hedefi',
-                      badgeText: 'Yakında',
-                    ),
-                    Divider(height: 1, color: colorScheme.outlineVariant),
-                    const _ProfilePlaceholderTile(
-                      icon: Icons.eco_outlined,
-                      title: 'Sürdürülebilirlik Odaklılığı',
-                      subtitle: 'Mevcut dolabı değerlendirme ve döngüsel moda',
-                      badgeText: 'Yakında',
-                    ),
-                  ],
-                ),
-              ),
-
+              // Editable, locally stored onboarding preferences.
+              const ProfilePreferencesPanel(),
               const SizedBox(height: AppSpacing.lg),
 
               // 3. Uygulama Ayarları Bölümü
