@@ -31,6 +31,10 @@ void main() {
     await tester.tap(find.text('İleri'));
     await tester.pump();
     expect(find.text('Devam etmek için en az bir tarz seç.'), findsOneWidget);
+    // Remove the validation snackbar before tapping the bottom action again.
+    ScaffoldMessenger.of(tester.element(find.byType(OnboardingScreen)))
+        .removeCurrentSnackBar();
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Minimal'));
     await tester.tap(find.text('İleri'));
@@ -40,6 +44,10 @@ void main() {
     await tester.tap(find.text('Tercihleri Kaydet'));
     await tester.pump();
     expect(find.text('Lütfen bir bütçe aralığı seç.'), findsOneWidget);
+    // Remove the validation snackbar before tapping the bottom action again.
+    ScaffoldMessenger.of(tester.element(find.byType(OnboardingScreen)))
+        .removeCurrentSnackBar();
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Orta'));
     await tester.tap(find.text('Tercihleri Kaydet'));
