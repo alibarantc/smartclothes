@@ -49,6 +49,7 @@ class _ClothingItemEditorScreenState extends State<ClothingItemEditorScreen> {
   late Set<ClothingSeason> _seasons;
   late Set<ClothingOccasion> _occasions;
   late bool _isFavorite;
+  late LaundryStatus _laundryStatus;
   bool _saving = false;
   bool _removePhoto = false;
   PickedWardrobePhoto? _newPhoto;
@@ -66,6 +67,7 @@ class _ClothingItemEditorScreenState extends State<ClothingItemEditorScreen> {
     _seasons = {...?old?.seasons};
     _occasions = {...?old?.occasions};
     _isFavorite = old?.isFavorite ?? false;
+    _laundryStatus = old?.laundryStatus ?? LaundryStatus.clean;
     if (old?.photoPath != null) {
       _existingPhoto = widget.images.read(
         ownerId: widget.ownerId, itemId: old!.id,
@@ -175,6 +177,7 @@ class _ClothingItemEditorScreenState extends State<ClothingItemEditorScreen> {
         seasons: _seasons,
         occasions: _occasions,
         isFavorite: _isFavorite,
+        laundryStatus: _laundryStatus,
         createdAt: previous?.createdAt ?? now,
         updatedAt: now,
       );
@@ -365,6 +368,18 @@ class _ClothingItemEditorScreenState extends State<ClothingItemEditorScreen> {
                                 });
                               },
                             )).toList(),
+                      ),
+                      SwitchListTile(
+                        key: const ValueKey('garment-laundry-status'),
+                        title: const Text('Bu kıyafet kirli'),
+                        subtitle: const Text(
+                          'Kirli kıyafetler kombin adaylarında kullanılmaz.',
+                        ),
+                        value: _laundryStatus == LaundryStatus.dirty,
+                        onChanged: _saving ? null : (value) => setState(() {
+                          _laundryStatus =
+                              value ? LaundryStatus.dirty : LaundryStatus.clean;
+                        }),
                       ),
                       SwitchListTile(
                         title: const Text('Favorilerime ekle'),

@@ -11,6 +11,10 @@ enum ClothingSeason { spring, summer, autumn, winter }
 
 enum ClothingOccasion { everyday, work, formal, sport, travel }
 
+/// Laundry status tracks availability, not ownership. Dirty clothes still
+/// belong to the wardrobe but should not enter outfit candidates.
+enum LaundryStatus { clean, dirty }
+
 class ClothingItem {
   const ClothingItem({
     required this.id,
@@ -26,6 +30,7 @@ class ClothingItem {
     this.notes,
     this.photoPath,
     this.isFavorite = false,
+    this.laundryStatus = LaundryStatus.clean,
   });
 
   final String id;
@@ -39,6 +44,7 @@ class ClothingItem {
   final String? notes;
   final String? photoPath;
   final bool isFavorite;
+  final LaundryStatus laundryStatus;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -55,6 +61,7 @@ class ClothingItem {
         'notes': notes,
         'photoPath': photoPath,
         'isFavorite': isFavorite,
+        'laundryStatus': laundryStatus.name,
         'createdAt': createdAt.millisecondsSinceEpoch,
         'updatedAt': updatedAt.millisecondsSinceEpoch,
       };
@@ -73,6 +80,14 @@ class ClothingItem {
         createdAt is! num || updatedAt is! num) {
       throw const FormatException('Invalid clothing item metadata');
     }
+
+    // Older saved items have no laundryStatus; treat those as clean. An
+    // unrecognized status is conservatively dirty so it is not recommended.
+    final rawLaundryStatus = json['laundryStatus'];
+    final laundryStatus = rawLaundryStatus == null ||
+            rawLaundryStatus == LaundryStatus.clean.name
+        ? LaundryStatus.clean
+        : LaundryStatus.dirty;
 
     final categoryName = json['category'];
     final category = ClothingCategory.values.firstWhere(
@@ -100,6 +115,7 @@ class ClothingItem {
       notes: json['notes'] is String ? json['notes'] as String : null,
       photoPath: json['photoPath'] is String ? json['photoPath'] as String : null,
       isFavorite: json['isFavorite'] == true,
+      laundryStatus: laundryStatus,
       createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt.toInt(), isUtc: true),
       updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt.toInt(), isUtc: true),
     );
@@ -125,6 +141,7 @@ class ClothingItem {
     String? notes,
     String? photoPath,
     bool? isFavorite,
+    LaundryStatus? laundryStatus,
     DateTime? updatedAt,
   }) {
     return ClothingItem(
@@ -139,6 +156,7 @@ class ClothingItem {
       notes: notes ?? this.notes,
       photoPath: photoPath ?? this.photoPath,
       isFavorite: isFavorite ?? this.isFavorite,
+      laundryStatus: laundryStatus ?? this.laundryStatus,
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

@@ -39,3 +39,10 @@ extension ClothingOccasionLabel on ClothingOccasion {
         ClothingOccasion.travel => 'Seyahat',
       };
 }
+
+extension LaundryStatusLabel on LaundryStatus {
+  String get label => switch (this) {
+        LaundryStatus.clean => 'Temiz',
+        LaundryStatus.dirty => 'Kirli',
+      };
+}

@@ -36,8 +36,27 @@ void main() {
     expect(restored.notes, 'Pamuk');
     expect(restored.photoPath, item.photoPath);
     expect(restored.isFavorite, isTrue);
+    expect(restored.laundryStatus, LaundryStatus.clean);
+    expect(restored.toJson()['laundryStatus'], 'clean');
     expect(restored.createdAt, created);
     expect(restored.updatedAt, updated);
+  });
+
+  test('old saved garments default to clean, unknown values fail closed', () {
+    final legacy = example().toJson()..remove('laundryStatus');
+    expect(ClothingItem.fromJson(legacy).laundryStatus, LaundryStatus.clean);
+
+    final invalid = example().toJson()..['laundryStatus'] = 'unknown';
+    expect(ClothingItem.fromJson(invalid).laundryStatus, LaundryStatus.dirty);
+  });
+
+  test('dirty items round-trip and copyWith preserves ownership', () {
+    final changed = example().copyWith(laundryStatus: LaundryStatus.dirty);
+    expect(changed.laundryStatus, LaundryStatus.dirty);
+    expect(changed.ownerId, example().ownerId);
+    expect(changed.id, example().id);
+    expect(ClothingItem.fromJson(changed.toJson()).laundryStatus,
+        LaundryStatus.dirty);
   });
 
   test('missing legacy tags and unknown enum names are safe', () {

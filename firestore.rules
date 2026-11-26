@@ -13,12 +13,12 @@ service cloud.firestore {
       return data.keys().hasAll([
           'id', 'ownerId', 'name', 'category', 'color', 'seasons',
           'occasions', 'brand', 'notes', 'photoPath', 'isFavorite',
-          'createdAt', 'updatedAt'
+          'laundryStatus', 'createdAt', 'updatedAt'
         ])
         && data.keys().hasOnly([
           'id', 'ownerId', 'name', 'category', 'color', 'seasons',
           'occasions', 'brand', 'notes', 'photoPath', 'isFavorite',
-          'createdAt', 'updatedAt'
+          'laundryStatus', 'createdAt', 'updatedAt'
         ])
         && data.ownerId == userId
         && data.id == itemId
@@ -43,6 +43,7 @@ service cloud.firestore {
         && (data.photoPath == null ||
             data.photoPath == 'users/' + userId + '/wardrobe/' + itemId + '/photo')
         && data.isFavorite is bool
+        && data.laundryStatus in ['clean', 'dirty']
         && data.createdAt is int && data.createdAt >= 0
         && data.updatedAt is int && data.updatedAt >= data.createdAt;
     }

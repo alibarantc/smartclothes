@@ -37,6 +37,16 @@ void main() {
     expect(await store.listItems('demo'), isEmpty);
   });
 
+  test('laundry status survives a local save, reload and update', () async {
+    await store.saveItem(item().copyWith(laundryStatus: LaundryStatus.dirty));
+    expect((await store.listItems('demo')).single.laundryStatus,
+        LaundryStatus.dirty);
+    final reloaded = (await store.listItems('demo')).single;
+    await store.saveItem(reloaded.copyWith(laundryStatus: LaundryStatus.clean));
+    expect((await store.listItems('demo')).single.laundryStatus,
+        LaundryStatus.clean);
+  });
+
   test('demo account never leaks to another account', () async {
     await store.saveItem(item());
     await store.saveItem(item(id: 'shirt2', ownerId: 'userABC'));

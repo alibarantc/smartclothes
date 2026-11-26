@@ -36,6 +36,7 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
   WardrobeRepository? _repository;
   WardrobeImageStore? _images;
   ClothingCategory? _selectedCategory;
+  LaundryStatus? _laundryFilter;
   bool _onlyFavorites = false;
   bool _loading = true;
   bool _busy = false;
@@ -190,6 +191,25 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
     }
   }
 
+  Future<void> _toggleLaundryStatus(ClothingItem item) async {
+    if (_busy || _repository == null) return;
+    setState(() => _busy = true);
+    try {
+      final next = item.laundryStatus == LaundryStatus.clean
+          ? LaundryStatus.dirty
+          : LaundryStatus.clean;
+      await _repository!.saveItem(item.copyWith(
+        laundryStatus: next,
+        updatedAt: DateTime.now().toUtc(),
+      ));
+      await _reload();
+    } catch (_) {
+      _message('Çamaşır durumu kaydedilemedi.');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   List<ClothingItem> get _filtered {
     final query = _search.trim().toLowerCase();
     return _items.where((item) {
@@ -197,6 +217,9 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
         return false;
       }
       if (_onlyFavorites && !item.isFavorite) return false;
+      if (_laundryFilter != null && item.laundryStatus != _laundryFilter) {
+        return false;
+      }
       return query.isEmpty ||
           item.name.toLowerCase().contains(query) ||
           item.color.toLowerCase().contains(query) ||
@@ -301,6 +324,17 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                           padding: const EdgeInsets.fromLTRB(
                             AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0,
                           ),
+                          child: Text(
+                            'Temiz: ${_items.where((item) => item.laundryStatus == LaundryStatus.clean).length} · '
+                            'Kirli: ${_items.where((item) => item.laundryStatus == LaundryStatus.dirty).length}',
+                            key: const ValueKey('laundry-counts'),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0,
+                          ),
                           child: TextField(
                             key: const ValueKey('wardrobe-search'),
                             onChanged: (value) =>
@@ -309,6 +343,37 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                               prefixIcon: Icon(Icons.search),
                               hintText: 'Kıyafet, renk veya marka ara',
                             ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.xs,
+                          ),
+                          child: Wrap(
+                            spacing: AppSpacing.sm,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              const Text('Çamaşır durumu:'),
+                              ChoiceChip(
+                                key: const ValueKey('laundry-filter-clean'),
+                                label: const Text('Temiz'),
+                                selected: _laundryFilter == LaundryStatus.clean,
+                                onSelected: (value) => setState(() {
+                                  _laundryFilter =
+                                      value ? LaundryStatus.clean : null;
+                                }),
+                              ),
+                              ChoiceChip(
+                                key: const ValueKey('laundry-filter-dirty'),
+                                label: const Text('Kirli'),
+                                selected: _laundryFilter == LaundryStatus.dirty,
+                                onSelected: (value) => setState(() {
+                                  _laundryFilter =
+                                      value ? LaundryStatus.dirty : null;
+                                }),
+                              ),
+                            ],
                           ),
                         ),
                         SizedBox(
@@ -389,13 +454,28 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
                                           ),
                                           title: Text(item.name),
                                           subtitle: Text(
-                                            '${item.category.label} · ${item.color}',
+                                            '${item.category.label} · ${item.color} · ${item.laundryStatus.label}',
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                           trailing: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
+                                              IconButton(
+                                                key: ValueKey('toggle-laundry-${item.id}'),
+                                                tooltip: item.laundryStatus == LaundryStatus.clean
+                                                    ? 'Kirli İşaretle'
+                                                    : 'Temiz İşaretle',
+                                                onPressed: _busy ? null
+                                                    : () => _toggleLaundryStatus(item),
+                                                icon: Icon(
+                                                  item.laundryStatus == LaundryStatus.clean
+                                                      ? Icons.local_laundry_service_outlined
+                                                      : Icons.check_circle_outline,
+                                                  color: item.laundryStatus == LaundryStatus.dirty
+                                                      ? colors.error : null,
+                                                ),
+                                              ),
                                               IconButton(
                                                 tooltip: item.isFavorite
                                                     ? 'Favorilerden çıkar'

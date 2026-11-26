@@ -34,6 +34,7 @@ void main() {
     expect(raw.exists, isTrue);
     expect(raw.data()?['ownerId'], 'user1');
     expect(raw.data()?['name'], 'Gri kazak');
+    expect(raw.data()?['laundryStatus'], 'clean');
 
     final loaded = await repo.listItems('user1');
     expect(loaded, hasLength(1));
@@ -42,6 +43,18 @@ void main() {
 
     await repo.deleteItem('user1', 'item1');
     expect(await repo.listItems('user1'), isEmpty);
+  });
+
+  test('dirty status survives a Firestore update and read', () async {
+    final fake = FakeFirebaseFirestore();
+    final repo = FirestoreWardrobeRepository(firestore: fake);
+    final dirty = item().copyWith(laundryStatus: LaundryStatus.dirty);
+    await repo.saveItem(dirty);
+    final loaded = await repo.listItems('user1');
+    expect(loaded.single.laundryStatus, LaundryStatus.dirty);
+    final saved = await fake.collection('users').doc('user1')
+        .collection('wardrobeItems').doc('item1').get();
+    expect(saved.data()?['laundryStatus'], 'dirty');
   });
 
   test('bad records and mismatched document ids are ignored', () async {
