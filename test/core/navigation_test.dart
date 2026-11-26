@@ -77,7 +77,7 @@ void main() {
       expect(find.byType(OutfitsScreen), findsOneWidget);
       expect(find.text('Kombinlerim'), findsOneWidget);
       expect(find.text('Henüz oluşturulmuş bir kombin yok'), findsOneWidget);
-      expect(find.text('Akıllı Kombin Motoru Yakında'), findsOneWidget);
+      expect(find.text('Gerçek kıyafetlerden öneri'), findsOneWidget);
 
       // 3. Switch to 'Profil' (tab index 3)
       await tester.tap(

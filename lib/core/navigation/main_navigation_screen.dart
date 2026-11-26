@@ -35,7 +35,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         onNavigateToTab: _onDestinationSelected,
       ),
       const WardrobeScreen(),
-      const OutfitsScreen(),
+      OutfitsScreen(isActive: _currentIndex == 2),
       const ProfileScreen(),
     ];
   }
@@ -44,6 +44,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     if (_currentIndex != index) {
       setState(() {
         _currentIndex = index;
+        // IndexedStack retains tab states; notify the outfit tab on entry so
+        // recently added or newly washed garments are read from storage.
+        _screens[2] = OutfitsScreen(isActive: index == 2);
       });
     }
   }
