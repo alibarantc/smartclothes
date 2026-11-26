@@ -58,7 +58,9 @@ class _ProfilePreferencesPanelState extends State<ProfilePreferencesPanel> {
     );
 
     if (mounted) {
-      setState(() => _currentPreferences = _store.load(_identity));
+      setState(() {
+        _currentPreferences = _store.load(_identity);
+      });
     }
   }
 
@@ -95,7 +97,9 @@ class _ProfilePreferencesPanelState extends State<ProfilePreferencesPanel> {
         ),
       ),
     );
-    if (mounted) setState(() => _currentPreferences = _store.load(_identity));
+    if (mounted) setState(() {
+        _currentPreferences = _store.load(_identity);
+      });
   }
 
   @override
