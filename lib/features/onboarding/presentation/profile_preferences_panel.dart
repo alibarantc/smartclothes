@@ -6,6 +6,7 @@ import 'package:smartclothes/features/auth/services/auth_service.dart';
 import 'package:smartclothes/features/onboarding/models/user_preferences.dart';
 import 'package:smartclothes/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:smartclothes/features/onboarding/services/preferences_store.dart';
+import 'package:smartclothes/features/style_catalog/presentation/reference_outfit_gallery_screen.dart';
 
 /// Displays saved preferences and reopens the same flow for editing.
 class ProfilePreferencesPanel extends StatefulWidget {
@@ -59,6 +60,42 @@ class _ProfilePreferencesPanelState extends State<ProfilePreferencesPanel> {
     }
   }
 
+  Future<void> _editFavoriteOutfits() async {
+    UserPreferences? initial;
+    try {
+      initial = await _currentPreferences;
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tercihler yüklenemedi. Tekrar dene.')),
+      );
+      return;
+    }
+    if (!mounted) return;
+
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (galleryContext) => ReferenceOutfitGalleryScreen(
+          initialSelection: initial?.favoriteOutfitIds ?? const <String>{},
+          onSave: (selected) async {
+            final existing = initial ?? const UserPreferences(isComplete: true);
+            final updated = UserPreferences(
+              styles: existing.styles,
+              budget: existing.budget,
+              favoriteOutfitIds: selected,
+              isComplete: existing.isComplete,
+            );
+            if (!await _store.save(_identity, updated)) {
+              throw StateError('Gallery choices could not be persisted');
+            }
+            if (galleryContext.mounted) Navigator.of(galleryContext).pop();
+          },
+        ),
+      ),
+    );
+    if (mounted) setState(() => _currentPreferences = _store.load(_identity));
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -108,6 +145,26 @@ class _ProfilePreferencesPanelState extends State<ProfilePreferencesPanel> {
                   const SizedBox(width: AppSpacing.md),
                   Expanded(child: Text(budget)),
                   const Icon(Icons.edit_outlined),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            const SmartSectionHeader(
+              title: 'Beğendiğin Kombinler',
+              subtitle: '40 referans kombin arasından en az 5 favori',
+            ),
+            SmartCard(
+              onTap: snapshot.connectionState == ConnectionState.waiting
+                  ? null
+                  : _editFavoriteOutfits,
+              child: Row(
+                children: [
+                  Icon(Icons.favorite_outline, color: colorScheme.primary),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Text('${preferences?.favoriteOutfitIds.length ?? 0} kombin seçildi'),
+                  ),
+                  const Icon(Icons.chevron_right),
                 ],
               ),
             ),

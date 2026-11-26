@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smartclothes/core/constants/app_constants.dart';
 import 'package:smartclothes/features/onboarding/models/user_preferences.dart';
 
-/// Two-step first-run flow. A future commit will add the 40-outfit catalog.
+/// Two-step preference setup, followed by the 40-look gallery for new users.
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({
     super.key,
@@ -55,6 +55,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             : UserPreferences(
                 styles: Set<ClothingStyle>.of(_selectedStyles),
                 budget: _selectedBudget,
+                favoriteOutfitIds: widget.initialPreferences?.favoriteOutfitIds ?? const <String>{},
                 isComplete: true,
               ),
       );

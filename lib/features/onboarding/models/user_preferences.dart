@@ -46,16 +46,20 @@ class UserPreferences {
   const UserPreferences({
     this.styles = const <ClothingStyle>{},
     this.budget,
+    this.favoriteOutfitIds = const <String>{},
     this.isComplete = false,
   });
 
   final Set<ClothingStyle> styles;
   final ShoppingBudget? budget;
+  /// Stable ids of reference looks liked in the 40-look gallery.
+  final Set<String> favoriteOutfitIds;
   final bool isComplete;
 
   Map<String, dynamic> toJson() => {
         'styles': styles.map((style) => style.name).toList()..sort(),
         'budget': budget?.name,
+        'favoriteOutfitIds': favoriteOutfitIds.toList()..sort(),
         'isComplete': isComplete,
       };
 
@@ -65,6 +69,7 @@ class UserPreferences {
         ? rawStyles.whereType<String>().toSet()
         : <String>{};
     final budgetName = json['budget'];
+    final rawFavorites = json['favoriteOutfitIds'];
 
     ShoppingBudget? parsedBudget;
     for (final item in ShoppingBudget.values) {
@@ -79,6 +84,9 @@ class UserPreferences {
           .where((style) => styleNames.contains(style.name))
           .toSet(),
       budget: parsedBudget,
+      favoriteOutfitIds: rawFavorites is List
+          ? rawFavorites.whereType<String>().toSet()
+          : <String>{},
       isComplete: json['isComplete'] == true,
     );
   }

@@ -7,6 +7,7 @@ import 'package:smartclothes/features/onboarding/models/user_preferences.dart';
 import 'package:smartclothes/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:smartclothes/features/onboarding/services/preferences_store.dart';
 import 'package:smartclothes/features/welcome/presentation/welcome_screen.dart';
+import 'package:smartclothes/features/style_catalog/presentation/reference_outfit_gallery_screen.dart';
 
 /// Routes signed-in or demo users through onboarding only on their first visit.
 class AuthGate extends StatelessWidget {
@@ -81,8 +82,41 @@ class _OnboardingEntryState extends State<_OnboardingEntry> {
   }
 
   Future<void> _finish(UserPreferences preferences) async {
-    final saved = await _store.save(widget.identity, preferences);
+    final requiresGallery = preferences.styles.isNotEmpty &&
+        preferences.budget != null &&
+        preferences.favoriteOutfitIds.length < 5;
+    final staged = requiresGallery
+        ? UserPreferences(
+            styles: preferences.styles,
+            budget: preferences.budget,
+            favoriteOutfitIds: preferences.favoriteOutfitIds,
+            isComplete: false,
+          )
+        : preferences;
+    final saved = await _store.save(widget.identity, staged);
     if (!saved) throw StateError('Preferences could not be persisted');
+    if (mounted) {
+      setState(() {
+        if (requiresGallery) {
+          _savedPreferences = Future<UserPreferences?>.value(staged);
+        } else {
+          _completedNow = true;
+        }
+      });
+    }
+  }
+
+  Future<void> _finishGallery(Set<String> selectedIds) async {
+    final previous = await _store.load(widget.identity);
+    if (previous == null) throw StateError('Preferences are missing');
+    final completed = UserPreferences(
+      styles: previous.styles,
+      budget: previous.budget,
+      favoriteOutfitIds: selectedIds,
+      isComplete: true,
+    );
+    final saved = await _store.save(widget.identity, completed);
+    if (!saved) throw StateError('Gallery choices could not be persisted');
     if (mounted) setState(() => _completedNow = true);
   }
 
@@ -113,6 +147,17 @@ class _OnboardingEntryState extends State<_OnboardingEntry> {
         }
         if (snapshot.data?.isComplete == true) {
           return const MainNavigationScreen();
+        }
+        final current = snapshot.data;
+        if (current != null &&
+            current.styles.isNotEmpty &&
+            current.budget != null &&
+            !current.isComplete) {
+          return ReferenceOutfitGalleryScreen(
+            key: const ValueKey('onboarding-gallery'),
+            initialSelection: current.favoriteOutfitIds,
+            onSave: _finishGallery,
+          );
         }
         return OnboardingScreen(
           initialPreferences: snapshot.data,
