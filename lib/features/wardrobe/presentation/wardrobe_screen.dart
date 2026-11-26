@@ -59,10 +59,12 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
   }
 
   Future<void> _reload() async {
-    if (mounted) setState(() {
-      _loading = true;
-      _error = null;
-    });
+    if (mounted) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    }
     try {
       final auth = AuthService.instance;
       final owner = widget.ownerId ??
