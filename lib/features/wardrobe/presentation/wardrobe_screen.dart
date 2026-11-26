@@ -109,6 +109,9 @@ class _WardrobeScreenState extends State<WardrobeScreen> {
     final images = _images;
     final owner = _ownerId;
     if (repo == null || images == null || owner == null || _busy) return;
+    // A success snackbar from the previous save otherwise covers the editor's
+    // fixed bottom action when the user opens another item immediately.
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
     final changed = await Navigator.of(context).push<bool>(
       MaterialPageRoute<bool>(
         builder: (_) => ClothingItemEditorScreen(
