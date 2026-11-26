@@ -110,6 +110,9 @@ void main() {
     expect(find.text('Kıyafeti Düzenle'), findsOneWidget);
     await tester.enterText(
         find.byKey(const ValueKey('garment-name')), 'Ekru tişört');
+    // Hide the test keyboard so it cannot obscure the fixed save action.
+    await tester.testTextInput.hide();
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('save-garment')));
     await tester.pumpAndSettle();
     expect(find.byType(ClothingItemEditorScreen), findsNothing);
