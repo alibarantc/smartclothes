@@ -7,6 +7,8 @@ import 'package:smartclothes/features/onboarding/models/user_preferences.dart';
 import 'package:smartclothes/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:smartclothes/features/onboarding/services/preferences_store.dart';
 import 'package:smartclothes/features/style_catalog/presentation/reference_outfit_gallery_screen.dart';
+import 'package:smartclothes/features/style_profile/presentation/style_profile_summary.dart';
+import 'package:smartclothes/features/style_profile/services/style_profile_service.dart';
 
 /// Displays saved preferences and reopens the same flow for editing.
 class ProfilePreferencesPanel extends StatefulWidget {
@@ -108,6 +110,9 @@ class _ProfilePreferencesPanelState extends State<ProfilePreferencesPanel> {
             ? 'Henüz bir tarz seçilmedi'
             : preferences.styles.map((style) => style.label).join(', ');
         final budget = preferences?.budget?.label ?? 'Bütçe belirlenmedi';
+        final profile = const StyleProfileService().analyze(
+          preferences?.favoriteOutfitIds ?? const <String>{},
+        );
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -167,6 +172,11 @@ class _ProfilePreferencesPanelState extends State<ProfilePreferencesPanel> {
                   const Icon(Icons.chevron_right),
                 ],
               ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            StyleProfileSummary(
+              profile: profile,
+              onChooseOutfits: _editFavoriteOutfits,
             ),
             if (snapshot.hasError) ...[
               const SizedBox(height: AppSpacing.sm),
