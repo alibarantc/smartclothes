@@ -97,9 +97,11 @@ class _ProfilePreferencesPanelState extends State<ProfilePreferencesPanel> {
         ),
       ),
     );
-    if (mounted) setState(() {
+    if (mounted) {
+      setState(() {
         _currentPreferences = _store.load(_identity);
       });
+    }
   }
 
   @override
