@@ -1,26 +1,61 @@
 rules_version = '2';
 
-// Firestore Security Rules — SmartClothes
-//
-// Current state: ALL reads and writes are DENIED by default.
-//
-// These rules will be progressively opened up once Firebase Authentication is
-// in place (Commit #05). Future rules will follow the pattern:
-//
-//   match /users/{userId}/{document=**} {
-//     allow read, write: if request.auth != null && request.auth.uid == userId;
-//   }
-//
-// To deploy these rules:
-//   firebase deploy --only firestore:rules
-//
-// See docs/firebase-setup.md for the full setup guide.
-
+// Only authenticated owners can access their own wardrobe metadata.
+// Other app collections remain closed until their feature is implemented.
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function validWardrobeItem(userId, itemId) {
+      let data = request.resource.data;
+      return data.keys().hasAll([
+          'id', 'ownerId', 'name', 'category', 'color', 'seasons',
+          'occasions', 'brand', 'notes', 'photoPath', 'isFavorite',
+          'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id', 'ownerId', 'name', 'category', 'color', 'seasons',
+          'occasions', 'brand', 'notes', 'photoPath', 'isFavorite',
+          'createdAt', 'updatedAt'
+        ])
+        && data.ownerId == userId
+        && data.id == itemId
+        && data.name is string
+        && data.name.size() > 0 && data.name.size() <= 120
+        && data.color is string
+        && data.color.size() > 0 && data.color.size() <= 60
+        && data.category in [
+          'tops', 'bottoms', 'outerwear', 'dresses',
+          'shoes', 'accessories', 'other'
+        ]
+        && data.seasons is list
+        && data.seasons.hasOnly(['spring', 'summer', 'autumn', 'winter'])
+        && data.occasions is list
+        && data.occasions.hasOnly([
+          'everyday', 'work', 'formal', 'sport', 'travel'
+        ])
+        && (data.brand == null ||
+            (data.brand is string && data.brand.size() <= 120))
+        && (data.notes == null ||
+            (data.notes is string && data.notes.size() <= 1000))
+        && (data.photoPath == null ||
+            data.photoPath == 'users/' + userId + '/wardrobe/' + itemId + '/photo')
+        && data.isFavorite is bool
+        && data.createdAt is int && data.createdAt >= 0
+        && data.updatedAt is int && data.updatedAt >= data.createdAt;
+    }
+
+    match /users/{userId}/wardrobeItems/{itemId} {
+      allow get, list: if isOwner(userId);
+      allow create, update: if isOwner(userId) &&
+        validWardrobeItem(userId, itemId);
+      allow delete: if isOwner(userId);
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
   }
 }
-

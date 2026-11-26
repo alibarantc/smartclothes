@@ -1,26 +1,25 @@
 rules_version = '2';
 
-// Firebase Storage Security Rules — SmartClothes
-//
-// Current state: ALL reads and writes are DENIED by default.
-//
-// These rules will be progressively opened up once Firebase Authentication is
-// in place (Commit #05). Future rules will follow the pattern:
-//
-//   match /users/{userId}/{allPaths=**} {
-//     allow read, write: if request.auth != null && request.auth.uid == userId;
-//   }
-//
-// To deploy these rules:
-//   firebase deploy --only storage
-//
-// See docs/firebase-setup.md for the full setup guide.
-
+// Garment photos are private. No public listing, download URL or write path.
 service firebase.storage {
   match /b/{bucket}/o {
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId}/wardrobe/{itemId}/photo {
+      allow read, delete: if isOwner(userId);
+      allow create, update: if isOwner(userId)
+        && request.resource != null
+        && request.resource.size > 0
+        && request.resource.size <= 8 * 1024 * 1024
+        && request.resource.contentType in [
+          'image/jpeg', 'image/png', 'image/webp'
+        ];
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }
   }
 }
-

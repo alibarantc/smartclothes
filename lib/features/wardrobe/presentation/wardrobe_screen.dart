@@ -116,7 +116,7 @@ class WardrobeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         Text(
-                          'Gardırobuna henüz bir parça eklenmedi. Kıyafet ekleme, yapay zeka ile fotoğraf yükleme, otomatik renk ve kategori etiketleme özellikleri bir sonraki geliştirme aşamasında gelecektir.',
+                          'Gardırobuna henüz bir parça eklenmedi. Kıyafet ekleme ve fotoğraf seçme ekranları yakında hazır olacak. Kıyafet bilgileri için güvenli veri altyapısı oluşturuldu.',
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant,
