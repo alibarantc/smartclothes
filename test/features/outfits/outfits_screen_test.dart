@@ -11,11 +11,12 @@ void main() {
 
   ClothingItem garment(String id, ClothingCategory category, {
     LaundryStatus status = LaundryStatus.clean,
+    String? name,
     Set<ClothingSeason> seasons = const <ClothingSeason>{},
   }) => ClothingItem(
     id: id,
     ownerId: 'demo',
-    name: id,
+    name: name ?? id,
     category: category,
     color: 'siyah',
     seasons: seasons,
@@ -44,11 +45,11 @@ void main() {
 
   testWidgets('shows only clean owned garments from the local wardrobe',
       (tester) async {
-    await repo.saveItem(garment('Temiz gömlek', ClothingCategory.tops));
-    await repo.saveItem(garment('Koyu pantolon', ClothingCategory.bottoms));
-    await repo.saveItem(garment('Temiz ayakkabı', ClothingCategory.shoes));
-    await repo.saveItem(garment('Kirli gömlek', ClothingCategory.tops,
-        status: LaundryStatus.dirty));
+    await repo.saveItem(garment('clean-shirt', ClothingCategory.tops, name: 'Temiz gömlek'));
+    await repo.saveItem(garment('dark-pants', ClothingCategory.bottoms, name: 'Koyu pantolon'));
+    await repo.saveItem(garment('clean-shoes', ClothingCategory.shoes, name: 'Temiz ayakkabı'));
+    await repo.saveItem(garment('dirty-shirt', ClothingCategory.tops,
+        name: 'Kirli gömlek', status: LaundryStatus.dirty));
     await open(tester);
     expect(find.text('1 kombin önerisi'), findsOneWidget);
     expect(find.textContaining('Temiz gömlek'), findsOneWidget);
@@ -76,12 +77,12 @@ void main() {
 
   testWidgets('season filter removes known incompatible pieces',
       (tester) async {
-    await repo.saveItem(garment('Yaz gömleği', ClothingCategory.tops,
-        seasons: {ClothingSeason.summer}));
-    await repo.saveItem(garment('Kış kazağı', ClothingCategory.tops,
-        seasons: {ClothingSeason.winter}));
-    await repo.saveItem(garment('Pantolon', ClothingCategory.bottoms));
-    await repo.saveItem(garment('Ayakkabı', ClothingCategory.shoes));
+    await repo.saveItem(garment('summer-shirt', ClothingCategory.tops,
+        name: 'Yaz gömleği', seasons: {ClothingSeason.summer}));
+    await repo.saveItem(garment('winter-sweater', ClothingCategory.tops,
+        name: 'Kış kazağı', seasons: {ClothingSeason.winter}));
+    await repo.saveItem(garment('pants2', ClothingCategory.bottoms, name: 'Pantolon'));
+    await repo.saveItem(garment('shoes2', ClothingCategory.shoes, name: 'Ayakkabı'));
     await open(tester);
     expect(find.text('2 kombin önerisi'), findsOneWidget);
 
