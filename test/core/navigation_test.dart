@@ -63,7 +63,7 @@ void main() {
 
       expect(find.byType(WardrobeScreen), findsOneWidget);
       expect(find.text('Dolabın henüz boş'), findsOneWidget);
-      expect(find.text('Kıyafet Ekleme Özelliği Yakında'), findsOneWidget);
+      expect(find.text('Dolabını kullanmak için giriş yap veya demo modunu aç.'), findsOneWidget);
 
       // 2. Switch to 'Kombinler' (tab index 2)
       await tester.tap(

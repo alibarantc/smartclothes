@@ -12,6 +12,8 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Gardırobuna kıyafet fotoğrafı ekleyebilmen için fotoğraf arşivine erişim gerekir.</string>
 	<key>CFBundleName</key>
 	<string>smartclothes</string>
 	<key>CFBundlePackageType</key>

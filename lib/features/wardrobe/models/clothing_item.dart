@@ -1,7 +1,8 @@
 /// Typed metadata for a single garment owned by one SmartClothes user.
 ///
-/// Photo bytes live in private Firebase Storage, not inside Firestore or local
-/// preferences. The stored [photoPath] is an internal Storage object path.
+/// Photo bytes live in private Firebase Storage or the app's local documents
+/// directory, never in Firestore or shared preferences. [photoPath] is an
+/// internal, owner-scoped object key (not a public URL).
 enum ClothingCategory {
   tops, bottoms, outerwear, dresses, shoes, accessories, other
 }

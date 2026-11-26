@@ -26,8 +26,11 @@ void validateClothingItem(ClothingItem item) {
   if (item.updatedAt.isBefore(item.createdAt)) {
     throw ArgumentError('updatedAt cannot precede createdAt');
   }
+  final cloudPath = 'users/${item.ownerId}/wardrobe/${item.id}/photo';
+  final localPath = 'local/wardrobe/${item.ownerId}/${item.id}/photo';
   if (item.photoPath != null &&
-      item.photoPath != 'users/${item.ownerId}/wardrobe/${item.id}/photo') {
+      item.photoPath != cloudPath &&
+      item.photoPath != localPath) {
     throw ArgumentError('Photo path does not belong to this item');
   }
 }
