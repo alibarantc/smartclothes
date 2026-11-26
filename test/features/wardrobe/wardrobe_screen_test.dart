@@ -112,10 +112,13 @@ void main() {
         find.byKey(const ValueKey('garment-name')), 'Ekru tişört');
     await tester.tap(find.byKey(const ValueKey('save-garment')));
     await tester.pumpAndSettle();
+    expect(find.byType(ClothingItemEditorScreen), findsNothing);
     expect(find.text('Ekru tişört'), findsOneWidget);
     expect(await repo.listItems('demo'), hasLength(1));
 
-    await tester.tap(find.byTooltip('Kıyafet işlemleri'));
+    final menu = find.byType(PopupMenuButton<String>);
+    expect(menu, findsOneWidget);
+    await tester.tap(menu);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Sil').last);
     await tester.pumpAndSettle();
@@ -124,7 +127,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(await repo.listItems('demo'), hasLength(1));
 
-    await tester.tap(find.byTooltip('Kıyafet işlemleri'));
+    await tester.tap(find.byType(PopupMenuButton<String>));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Sil').last);
     await tester.pumpAndSettle();
@@ -157,8 +160,10 @@ void main() {
     expect(find.text('Siyah Ayakkabı'), findsOneWidget);
     await tester.tap(find.text('Favoriler'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Ayakkabı').first);
-    await tester.tap(find.text('Ayakkabı').first);
+    // Category chips are horizontally scrollable and offscreen chips are lazy.
+    await tester.drag(find.byType(ListView).first, const Offset(-380, 0));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ayakkabı'));
     await tester.pumpAndSettle();
     expect(find.text('Mavi Gömlek'), findsNothing);
     expect(find.text('Siyah Ayakkabı'), findsOneWidget);
